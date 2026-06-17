@@ -18,7 +18,7 @@
         "displayName": "Deziner Visual Editor",
         "selector": [
           {
-            "filenamePattern": "*.deziner.html"
+            "filenamePattern": "**/*.deziner.html"
           }
         ],
         "priority": "default"

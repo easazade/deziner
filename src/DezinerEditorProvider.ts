@@ -34,6 +34,8 @@ export class DezinerEditorProvider implements vscode.CustomTextEditorProvider {
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken,
   ): Promise<void> {
+    console.log(`Deziner resolving visual editor for ${document.uri.toString()}`);
+
     const webview = webviewPanel.webview;
 
     const webviewDirectory = vscode.Uri.joinPath(
@@ -116,6 +118,8 @@ export class DezinerEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   private getWebviewHtml(webview: vscode.Webview): string {
+    console.log("Deziner loading webview assets from dist/webview.");
+
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this.context.extensionUri,
@@ -146,8 +150,8 @@ export class DezinerEditorProvider implements vscode.CustomTextEditorProvider {
 						http-equiv="Content-Security-Policy"
 						content="
 							default-src 'none';
-							style-src ${webview.cspSource};
-							script-src 'nonce-${nonce}';
+							style-src ${webview.cspSource} 'unsafe-inline';
+							script-src ${webview.cspSource} 'nonce-${nonce}';
 							img-src ${webview.cspSource} data: https:;
 							font-src ${webview.cspSource} data:;
 						"
@@ -167,10 +171,21 @@ export class DezinerEditorProvider implements vscode.CustomTextEditorProvider {
 				</head>
 
 				<body>
-					<div id="root"></div>
+					<div id="root" style="padding: 16px; color: var(--vscode-foreground, #cccccc);">
+						Loading Deziner Visual Editor...
+					</div>
+
+					<script nonce="${nonce}">
+						window.addEventListener('error', event => {
+							const root = document.getElementById('root');
+							if (root) {
+								root.textContent = 'Deziner webview error: ' + event.message;
+							}
+						});
+					</script>
 
 					<script
-						type="module"
+						defer
 						nonce="${nonce}"
 						src="${scriptUri}"
 					></script>
