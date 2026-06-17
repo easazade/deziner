@@ -1,100 +1,96 @@
-import { useEffect, useState } from 'react';
-import { vscode } from './vscode';
+import { useEffect, useState } from "react";
+import { vscode } from "./vscode";
 
 type ExtensionMessage = {
-	type: 'documentChanged';
-	text: string;
+  type: "documentChanged";
+  text: string;
 };
 
 export function App() {
-	const [documentText, setDocumentText] = useState('');
+  const [documentText, setDocumentText] = useState("");
 
-	useEffect(() => {
-		function handleMessage(
-			event: MessageEvent<ExtensionMessage>
-		): void {
-			const message = event.data;
+  useEffect(() => {
+    function handleMessage(event: MessageEvent<ExtensionMessage>): void {
+      const message = event.data;
 
-			if (message.type === 'documentChanged') {
-				setDocumentText(message.text);
-			}
-		}
+      if (message.type === "documentChanged") {
+        setDocumentText(message.text);
+      }
+    }
 
-		window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
-		vscode.postMessage({
-			type: 'ready'
-		});
+    vscode.postMessage({
+      type: "ready",
+    });
 
-		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, []);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
-	function applyChanges(): void {
-		vscode.postMessage({
-			type: 'replaceDocument',
-			text: documentText
-		});
-	}
+  function applyChanges(): void {
+    vscode.postMessage({
+      type: "replaceDocument",
+      text: documentText,
+    });
+  }
 
-	return (
-		<div className="app">
-			<header className="toolbar">
-				<strong>Deziner</strong>
+  return (
+    <div className="app">
+      <header className="toolbar">
+        <strong>Deziner</strong>
 
-				<div className="toolbarActions">
-					<button type="button">Add element</button>
-					<button type="button">Preview</button>
-				</div>
-			</header>
+        <div className="toolbarActions">
+          <button type="button">Add element</button>
+          <button type="button">Preview</button>
+        </div>
+      </header>
 
-			<main className="workspace">
-				<aside className="sidebar">
-					<h2>Elements</h2>
+      <main className="workspace">
+        <aside className="sidebar">
+          <h2>Elements</h2>
 
-					<ul>
-						<li>Page</li>
-						<li>Header</li>
-						<li>Content</li>
-					</ul>
-				</aside>
+          <ul>
+            <li>Page</li>
+            <li>Header</li>
+            <li>Content</li>
+          </ul>
+        </aside>
 
-				<section className="canvas">
-					<div className="page">
-						<span className="eyebrow">
-							Visual canvas
-						</span>
+        <section className="canvas">
+          <div className="page">
+            <span className="eyebrow">Visual canvas</span>
 
-						<h1>Deziner is running</h1>
+            <h1>Deziner is running</h1>
 
-						<p>
-							This area will eventually render and edit
-							your HTML document visually.
-						</p>
-					</div>
-				</section>
+            <p>
+              This area will eventually render and edit your HTML document
+              visually.
+            </p>
+          </div>
+        </section>
 
-				<aside className="sourcePanel">
-					<h2>Document source</h2>
+        <aside className="sourcePanel">
+          <h2>Document source</h2>
 
-					<textarea
-						value={documentText}
-						onChange={event => {
-							setDocumentText(event.target.value);
-						}}
-						spellCheck={false}
-					/>
+          <textarea
+            value={documentText}
+            onChange={(event) => {
+              setDocumentText(event.target.value);
+            }}
+            spellCheck={false}
+          />
 
-					<button
-						type="button"
-						className="primaryButton"
-						onClick={applyChanges}
-					>
-						Apply to document
-					</button>
-				</aside>
-			</main>
-		</div>
-	);
+          <button
+            type="button"
+            className="primaryButton"
+            onClick={applyChanges}
+          >
+            Apply
+          </button>
+        </aside>
+      </main>
+    </div>
+  );
 }
