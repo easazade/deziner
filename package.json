@@ -12,6 +12,18 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "customEditors": [
+      {
+        "viewType": "deziner.visualEditor",
+        "displayName": "Deziner Visual Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.deziner.html"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
     "commands": [
       {
         "command": "deziner.open",

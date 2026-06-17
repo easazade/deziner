@@ -1,29 +1,77 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "deziner" is now active!');
+const VIEW_TYPE = "deziner.visualEditor";
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const disposable = vscode.commands.registerCommand("deziner.open", () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window
-      .showInformationMessage("Opened Deziner command!!!", "Item 1", "Item 2")
-      .then((item1) => {
-        console.log(`Item - 1 selected ${item1}`);
-      });
-  });
+class DezinerEditorProvider implements vscode.CustomTextEditorProvider {
+  public resolveCustomTextEditor(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel,
+    _token: vscode.CancellationToken,
+  ): void {
+    webviewPanel.webview.options = {
+      enableScripts: true,
+    };
 
-  context.subscriptions.push(disposable);
+    webviewPanel.webview.html = this.getHtml();
+  }
+
+  private getHtml(): string {
+    return /* html */ `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1.0"
+				>
+
+				<title>Deziner</title>
+
+				<style>
+					body {
+						font-family: var(--vscode-font-family);
+						color: var(--vscode-foreground);
+						background: var(--vscode-editor-background);
+						padding: 24px;
+					}
+
+					.canvas {
+						min-height: 400px;
+						border: 1px solid var(--vscode-panel-border);
+						border-radius: 8px;
+						padding: 24px;
+					}
+				</style>
+			</head>
+
+			<body>
+				<h1>Deziner</h1>
+
+				<div class="canvas">
+					Your WYSIWYG editor will live here.
+				</div>
+			</body>
+			</html>
+		`;
+  }
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function activate(context: vscode.ExtensionContext): void {
+  const provider = new DezinerEditorProvider();
+
+  const registration = vscode.window.registerCustomEditorProvider(
+    VIEW_TYPE,
+    provider,
+    {
+      webviewOptions: {
+        retainContextWhenHidden: true,
+      },
+    },
+  );
+
+  context.subscriptions.push(registration);
+}
+
+export function deactivate(): void {}
