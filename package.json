@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "deziner.helloWorld",
-        "title": "Hello World"
+        "command": "deziner.open",
+        "title": "Opening Deziner"
       }
     ]
   },
