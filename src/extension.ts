@@ -5,7 +5,15 @@ export function activate(context: vscode.ExtensionContext): void {
   console.log("Deziner extension activated.");
 
   context.subscriptions.push(
-    DezinerEditorProvider.register(context),
+    vscode.window.registerCustomEditorProvider(
+      DezinerEditorProvider.viewType,
+      new DezinerEditorProvider(context),
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      },
+    ),
     vscode.commands.registerCommand(
       "deziner.open",
       async (uri?: vscode.Uri) => {
